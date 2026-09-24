@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MyDuitGue</title>
+    <!-- PWA Web App Manifest (Dynamic Manifest) -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"MyDuitGue","short_name":"MyDuitGue","start_url":".","display":"standalone","background_color":"#000000","theme_color":"#0f172a","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%2338bdf8"/><text x="50" y="65" font-size="50" font-weight="bold" text-anchor="middle" fill="white">%E0%B8%BF</text></svg>","sizes":"192x192 512x512","type":"image/svg+xml"}]}'>
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KeuanganKu">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- HTML5 QRCode Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+
+        /* Preset Tema Warna Background */
+        body.theme-dark {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            color: #f8fafc;
+        }
+
+        /* Tema AMOLED Pure Black */
+        body.theme-amoled {
+            background: #000000 !important;
+            color: #ffffff;
+        }
+
+        body.theme-light {
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 50%, #f1f5f9 100%);
+            color: #0f172a;
+        }
+
+        body.theme-emerald {
+            background: linear-gradient(135deg, #064e3b 0%, #022c22 50%, #0f172a 100%);
+            color: #ecfdf5;
+        }
+
+        body.theme-purple {
+            background: linear-gradient(135deg, #3b0764 0%, #1e1b4b 50%, #0f172a 100%);
+            color: #faf5ff;
+        }
+
+        /* Penyesuaian Komponen saat AMOLED Mode */
+        body.theme-amoled .glass-card {
+            background: rgba(18, 18, 18, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: none;
+        }
+
+        body.theme-amoled .glass-card-active,
+        body.theme-amoled .bottom-nav {
+            background: rgba(28, 28, 28, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        body.theme-amoled .glass-input {
+            background: #000000;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        body.theme-amoled .bg-orb {
+            display: none;
+        }
+
+        /* Penyesuaian Komponen saat Light Mode */
+        body.theme-light .glass-card {
+            background: rgba(255, 255, 255, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+            color: #0f172a;
+        }
+
+        body.theme-light .glass-card-active,
+        body.theme-light .bottom-nav {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #0f172a;
+        }
+
+        body.theme-light .glass-input {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            color: #0f172a;
+        }
+
+        body.theme-light .text-slate-200, 
+        body.theme-light .text-slate-300, 
+        body.theme-light .text-slate-400 {
+            color: #334155;
+        }
+
+        body.theme-light .text-white {
+            color: #0f172a;
+        }
+
+        /* Perbaikan kontras teks cyan/biru muda di Light Mode */
+        body.theme-light .text-cyan-300,
+        body.theme-light .text-cyan-400 {
+            color: #0284c7 !important;
+        }
+        
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Glassmorphism Default Styles */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glass-card-active {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .bottom-nav {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .glass-input {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        .glass-input:focus {
+            outline: none;
+            border-color: rgba(56, 189, 248, 0.6);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+        }
+
+        /* Shimmer Effect untuk Item Tercapai */
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .shimmer-card {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(52, 211, 153, 0.5) !important;
+            background: rgba(16, 185, 129, 0.12) !important;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+        }
+
+        .shimmer-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            transform: translateX(-100%);
+            background-image: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0,
+                rgba(255, 255, 255, 0.08) 20%,
+                rgba(255, 255, 255, 0.3) 60%,
+                rgba(255, 255, 255, 0)
+            );
+            animation: shimmer 2.5s infinite;
+        }
+
+        /* Video element styling for barcode reader */
+        #scanner-reader video {
+            border-radius: 1rem !important;
+            object-fit: cover !important;
+        }
+    </style>
+</head>
+<body class="flex flex-col max-w-md mx-auto min-h-screen pb-24 relative overflow-x-hidden theme-dark">
+
+    <!-- Decorative Background Orbs -->
+    <div class="bg-orb fixed -top-10 -left-10 w-48 h-48 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="bg-orb fixed top-1/3 -right-10 w-60 h-60 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="bg-orb fixed -bottom-10 left-1/4 w-52 h-52 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Header / Greeting -->
+    <header class="px-6 pt-8 pb-4 flex justify-between items-center z-10">
+        <div>
+            <div class="flex items-center gap-1.5 text-xs font-medium text-cyan-400 mb-1">
+                <i data-lucide="sun" id="timeIcon" class="w-4 h-4"></i>
+                <span id="greetingTime">Selamat Pagi</span>
+            </div>
+            <h1 class="text-2xl font-extrabold tracking-tight" id="userNameDisplay">Namaku</h1>
+        </div>
+        <div id="tabHeaderAction">
+            <!-- Dynamic Header Action Button -->
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="px-6 space-y-4 z-10 flex-1">
+
+        <!-- TAB 1: BERANDA -->
+        <section id="tab-beranda" class="tab-content space-y-4">
+            
+            <!-- Saldo Utama & Total Dana Overview -->
+            <div id="section-main-wallet" class="glass-card p-5 rounded-3xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-cyan-500/30 space-y-3">
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-semibold text-cyan-300 uppercase tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="wallet" class="w-4 h-4 text-cyan-400"></i>
+                            Saldo Dompet Utama
+                        </span>
+                    </div>
+                    <div class="text-3xl font-black tracking-tight text-cyan-400" id="berandaDompetSaldo">Rp 0</div>
+                </div>
+
+                <div class="pt-2.5 border-t border-white/10 flex justify-between items-center text-xs">
+                    <span class="text-slate-400">Total Seluruh Dana (Semua Saldo):</span>
+                    <span class="font-bold text-slate-200" id="totalSemuaSaldo">Rp 0</span>
+                </div>
+            </div>
+
+            <!-- Grid Saldo Lainnya -->
+            <div id="section-other-wallets" class="space-y-1.5">
+                <div class="grid grid-cols-3 gap-2" id="berandaOtherWallets">
+                    <!-- Dynamic Small Wallet Cards -->
+                </div>
+            </div>
+
+            <!-- Tombol Quick Action -->
+            <div id="section-quick-actions" class="space-y-2.5 pt-1">
+                <button onclick="openPemasukanModal()" class="w-full py-3.5 px-4 glass-card hover:glass-card-active rounded-2xl border border-emerald-500/30 flex items-center justify-between text-emerald-300 hover:text-emerald-200 transition active:scale-95 group shadow-lg shadow-emerald-950/20">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 glass-card rounded-xl bg-emerald-500/20 text-emerald-400 group-hover:scale-110 transition shrink-0">
+                            <i data-lucide="arrow-down-left" class="w-5 h-5"></i>
+                        </div>
+                        <div class="text-left">
+                            <span class="block text-xs font-bold tracking-wide">Tambah Saldo / Pemasukan</span>
+                            <span class="block text-[10px] text-slate-400">Gaji, Uang Saku, THR, Cashback</span>
+                        </div>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-emerald-400/60"></i>
+                </button>
+
+                <button onclick="openJajanModal()" class="w-full py-3.5 px-4 glass-card hover:glass-card-active rounded-2xl border border-rose-500/30 flex items-center justify-between text-rose-300 hover:text-rose-200 transition active:scale-95 group shadow-lg shadow-rose-950/20">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 glass-card rounded-xl bg-rose-500/20 text-rose-400 group-hover:scale-110 transition shrink-0">
+                            <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                        </div>
+                        <div class="text-left">
+                            <span class="block text-xs font-bold tracking-wide" id="randomCatchphrase">Jajan / Catat Pengeluaran</span>
+                            <span class="block text-[10px] text-slate-400">Scan Barcode / Catat Cepat</span>
+                        </div>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-rose-400/60"></i>
+                </button>
+            </div>
+
+            <!-- Wishlist / Target Barang Tabungan -->
+            <div id="section-wishlist" class="space-y-3 pt-2">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-200 tracking-wide">Target Barang & Wishlist</h2>
+                        <p class="text-[11px] text-slate-400">Dibiayai dari <span class="text-cyan-300 font-semibold">Dana Tabungan</span></p>
+                    </div>
+                    <button onclick="openAddWishlistModal()" class="flex items-center gap-1 px-3 py-1.5 glass-card rounded-xl text-xs font-semibold text-cyan-300 hover:bg-cyan-500/20 transition active:scale-95">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Tambah</span>
+                    </button>
+                </div>
+
+                <div id="wishlistContainer" class="space-y-3">
+                    <!-- Dynamic Wishlist Items -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: SEMUA SALDO -->
+        <section id="tab-saldo" class="tab-content hidden space-y-4">
+            <div class="flex justify-between items-center mb-1">
+                <div>
+                    <h2 class="text-base font-bold text-slate-200 tracking-wide">Alokasi Saldo</h2>
+                    <p class="text-xs text-slate-400">Kelola rincian saldo dan alokasi dana Anda</p>
+                </div>
+                <button onclick="openTransferModal()" class="flex items-center gap-1 px-3 py-1.5 glass-card rounded-xl text-xs font-bold text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/20 transition active:scale-95">
+                    <i data-lucide="arrow-left-right" class="w-3.5 h-3.5 text-indigo-400"></i>
+                    <span>Transfer Saldo</span>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-4" id="saldoGrid">
+                <!-- Dynamic Saldo Cards -->
+            </div>
+        </section>
+
+        <!-- TAB 3: RIWAYAT TRANSAKSI -->
+        <section id="tab-riwayat" class="tab-content hidden space-y-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-base font-bold text-slate-200 tracking-wide">Riwayat Transaksi</h2>
+                    <p class="text-xs text-slate-400">Catatan pengeluaran & pemasukan</p>
+                </div>
+                <button onclick="clearHistory()" class="text-xs text-rose-400 hover:underline font-semibold flex items-center gap-1 glass-card px-2.5 py-1.5 rounded-xl border border-rose-500/20">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    <span>Hapus Riwayat</span>
+                </button>
+            </div>
+
+            <!-- Rekapitulasi Ringkas -->
+            <div class="grid grid-cols-2 gap-2.5">
+                <div class="glass-card p-3 rounded-2xl border border-emerald-500/20 flex flex-col justify-between">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+                        <i data-lucide="arrow-down-left" class="w-3 h-3 text-emerald-400"></i> Total Masuk
+                    </span>
+                    <span class="text-base font-black text-emerald-400 mt-1" id="historyTotalIn">Rp 0</span>
+                </div>
+                <div class="glass-card p-3 rounded-2xl border border-rose-500/20 flex flex-col justify-between">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+                        <i data-lucide="arrow-up-right" class="w-3 h-3 text-rose-400"></i> Total Keluar
+                    </span>
+                    <span class="text-base font-black text-rose-400 mt-1" id="historyTotalOut">Rp 0</span>
+                </div>
+            </div>
+
+            <!-- Filter Kategori Transaksi -->
+            <div class="flex gap-2">
+                <button onclick="setHistoryFilter('all')" id="filter-btn-all" class="flex-1 py-1.5 px-3 glass-card rounded-xl text-xs font-bold text-cyan-400 border border-cyan-400/50 transition">
+                    Semua
+                </button>
+                <button onclick="setHistoryFilter('in')" id="filter-btn-in" class="flex-1 py-1.5 px-3 glass-card rounded-xl text-xs font-bold text-slate-400 border border-white/5 hover:text-emerald-400 transition">
+                    Pemasukan (+)
+                </button>
+                <button onclick="setHistoryFilter('out')" id="filter-btn-out" class="flex-1 py-1.5 px-3 glass-card rounded-xl text-xs font-bold text-slate-400 border border-white/5 hover:text-rose-400 transition">
+                    Pengeluaran (-)
+                </button>
+            </div>
+
+            <div id="historyContainer" class="space-y-2.5 max-h-[55vh] overflow-y-auto no-scrollbar pr-0.5">
+                <!-- Dynamic History Items -->
+            </div>
+        </section>
+
+        <!-- TAB 4: PENGATURAN -->
+        <section id="tab-pengaturan" class="tab-content hidden space-y-5">
+            <div>
+                <h2 class="text-base font-bold text-slate-200 tracking-wide">Pengaturan</h2>
+                <p class="text-xs text-slate-400">Sesuaikan profil, cadangan data, dan tampilan</p>
+            </div>
+
+            <!-- Profil User Card -->
+            <div class="glass-card p-4 rounded-2xl flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="p-3 glass-card rounded-2xl text-cyan-400">
+                        <i data-lucide="user" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Nama Pengguna</span>
+                        <span class="text-base font-bold text-slate-200" id="settingNameDisplay">Namaku</span>
+                    </div>
+                </div>
+                <button onclick="editUserName()" class="px-3 py-1.5 glass-card rounded-xl text-xs font-semibold text-cyan-300 hover:bg-cyan-500/20 transition active:scale-95">
+                    Ubah
+                </button>
+            </div>
+
+            <!-- CADANGAN & PEMULIHAN DATA -->
+            <div class="glass-card p-4 rounded-2xl space-y-3">
+                <h3 class="text-xs font-bold text-slate-300 tracking-wider uppercase flex items-center gap-1.5">
+                    <i data-lucide="database" class="w-4 h-4 text-cyan-400"></i>
+                    <span>Cadangan & Pemulihan Data</span>
+                </h3>
+                <p class="text-[11px] text-slate-400">Simpan berkas cadangan agar data keuangan Anda tetap aman saat berpindah perangkat.</p>
+                
+                <div class="grid grid-cols-2 gap-2.5">
+                    <button onclick="exportData()" class="py-2.5 px-3 glass-card hover:bg-cyan-500/20 rounded-xl text-xs font-bold text-cyan-300 border border-cyan-500/30 flex items-center justify-center gap-2 transition active:scale-95">
+                        <i data-lucide="download" class="w-4 h-4 text-cyan-400"></i>
+                        <span>Ekspor Data</span>
+                    </button>
+                    
+                    <label class="py-2.5 px-3 glass-card hover:bg-indigo-500/20 rounded-xl text-xs font-bold text-indigo-300 border border-indigo-500/30 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
+                        <i data-lucide="upload" class="w-4 h-4 text-indigo-400"></i>
+                        <span>Impor Data</span>
+                        <input type="file" id="importFileInput" class="hidden" accept=".json" onchange="importData(event)">
+                    </label>
+                </div>
+            </div>
+
+            <!-- TAMPILAN MODUL BERANDA -->
+            <div class="glass-card p-4 rounded-2xl space-y-3">
+                <h3 class="text-xs font-bold text-slate-300 tracking-wider uppercase flex items-center gap-1.5">
+                    <i data-lucide="layout" class="w-4 h-4 text-cyan-400"></i>
+                    <span>Modul Beranda</span>
+                </h3>
+                <p class="text-[11px] text-slate-400">Atur elemen mana saja yang tampil di halaman Beranda:</p>
+                
+                <div class="space-y-2 text-xs font-semibold">
+                    <label class="flex items-center justify-between cursor-pointer p-1">
+                        <span>Card Saldo Utama</span>
+                        <input type="checkbox" id="toggleMainWallet" class="w-4 h-4 accent-cyan-400" onchange="updateVisibilitySettings()">
+                    </label>
+                    <label class="flex items-center justify-between cursor-pointer p-1">
+                        <span>Grid Saldo Lainnya</span>
+                        <input type="checkbox" id="toggleOtherWallets" class="w-4 h-4 accent-cyan-400" onchange="updateVisibilitySettings()">
+                    </label>
+                    <label class="flex items-center justify-between cursor-pointer p-1">
+                        <span>Tombol Akses Cepat (Jajan/In)</span>
+                        <input type="checkbox" id="toggleQuickActions" class="w-4 h-4 accent-cyan-400" onchange="updateVisibilitySettings()">
+                    </label>
+                    <label class="flex items-center justify-between cursor-pointer p-1">
+                        <span>Target Wishlist</span>
+                        <input type="checkbox" id="toggleWishlist" class="w-4 h-4 accent-cyan-400" onchange="updateVisibilitySettings()">
+                    </label>
+                </div>
+            </div>
+
+            <!-- SHORTCUT HEADER -->
+            <div class="glass-card p-4 rounded-2xl space-y-3">
+                <h3 class="text-xs font-bold text-slate-300 tracking-wider uppercase flex items-center gap-1.5">
+                    <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
+                    <span>Shortcut Header Beranda</span>
+                </h3>
+                <p class="text-[11px] text-slate-400">Pilih tombol pintasan cepat di pojok kanan atas header:</p>
+
+                <select id="headerShortcutSelect" onchange="updateHeaderShortcutSetting(this.value)" class="w-full px-3 py-2 rounded-xl glass-input text-xs font-bold">
+                    <option value="none" class="bg-slate-900 text-white">Tanpa Shortcut</option>
+                    <option value="scan" class="bg-slate-900 text-white">Scan Barcode Cepat</option>
+                    <option value="pemasukan" class="bg-slate-900 text-white">Tambah Saldo / Pemasukan</option>
+                    <option value="wishlist" class="bg-slate-900 text-white">Tambah Wishlist Baru</option>
+                </select>
+            </div>
+
+            <!-- Theme Picker Section -->
+            <div class="space-y-3 pt-1">
+                <h3 class="text-xs font-bold text-slate-300 tracking-wider uppercase">Pilih Tema Tampilan</h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="setTheme('theme-dark')" class="p-3.5 glass-card rounded-2xl flex items-center gap-3 border border-slate-700/60 hover:border-cyan-400 transition text-left">
+                        <div class="w-7 h-7 rounded-full bg-slate-900 border-2 border-cyan-400 shrink-0"></div>
+                        <span class="text-xs font-semibold">Dark Blue</span>
+                    </button>
+                    <button onclick="setTheme('theme-amoled')" class="p-3.5 glass-card rounded-2xl flex items-center gap-3 border border-slate-700/60 hover:border-cyan-400 transition text-left">
+                        <div class="w-7 h-7 rounded-full bg-black border-2 border-white shrink-0"></div>
+                        <span class="text-xs font-semibold">AMOLED Black</span>
+                    </button>
+                    <button onclick="setTheme('theme-light')" class="p-3.5 glass-card rounded-2xl flex items-center gap-3 border border-slate-700/60 hover:border-cyan-400 transition text-left">
+                        <div class="w-7 h-7 rounded-full bg-slate-200 border-2 border-slate-400 shrink-0"></div>
+                        <span class="text-xs font-semibold">Light Mode</span>
+                    </button>
+                    <button onclick="setTheme('theme-emerald')" class="p-3.5 glass-card rounded-2xl flex items-center gap-3 border border-slate-700/60 hover:border-emerald-400 transition text-left">
+                        <div class="w-7 h-7 rounded-full bg-emerald-900 border-2 border-emerald-400 shrink-0"></div>
+                        <span class="text-xs font-semibold">Emerald</span>
+                    </button>
+                    <button onclick="setTheme('theme-purple')" class="p-3.5 glass-card rounded-2xl flex items-center gap-3 border border-slate-700/60 hover:border-purple-400 transition text-left col-span-2">
+                        <div class="w-7 h-7 rounded-full bg-purple-900 border-2 border-purple-400 shrink-0"></div>
+                        <span class="text-xs font-semibold">Purple Night</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bottom-nav px-4 py-2.5 z-40 flex justify-around items-center">
+        <button onclick="switchTab('beranda')" id="nav-beranda" class="nav-btn flex flex-col items-center gap-1 text-cyan-400 transition active:scale-95">
+            <i data-lucide="home" class="w-5 h-5"></i>
+            <span class="text-[10px] font-bold">Beranda</span>
+        </button>
+        <button onclick="switchTab('saldo')" id="nav-saldo" class="nav-btn flex flex-col items-center gap-1 text-slate-400 transition active:scale-95">
+            <i data-lucide="wallet" class="w-5 h-5"></i>
+            <span class="text-[10px] font-bold">Saldo</span>
+        </button>
+        <button onclick="switchTab('riwayat')" id="nav-riwayat" class="nav-btn flex flex-col items-center gap-1 text-slate-400 transition active:scale-95">
+            <i data-lucide="history" class="w-5 h-5"></i>
+            <span class="text-[10px] font-bold">Riwayat</span>
+        </button>
+        <button onclick="switchTab('pengaturan')" id="nav-pengaturan" class="nav-btn flex flex-col items-center gap-1 text-slate-400 transition active:scale-95">
+            <i data-lucide="settings" class="w-5 h-5"></i>
+            <span class="text-[10px] font-bold">Pengaturan</span>
+        </button>
+    </nav>
+
+    <!-- Modal Transfer Antar Saldo -->
+    <div id="transferModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 z-50 hidden">
+        <div class="glass-card-active p-6 sm:p-7 rounded-3xl w-full max-w-md space-y-4 relative max-h-[92vh] overflow-y-auto no-scrollbar">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-bold flex items-center gap-2">
+                    <i data-lucide="arrow-left-right" class="w-5 h-5 text-indigo-400"></i>
+                    <span>Transfer Antar Saldo</span>
+                </h3>
+                <button onclick="closeTransferModal()" class="text-slate-400 hover:text-white p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Saldo Asal -->
+            <div>
+                <label class="block text-xs text-slate-400 mb-1 font-medium">Dari Saldo (Sumber):</label>
+                <select id="transferFromSelect" class="w-full px-3.5 py-2.5 rounded-xl glass-input text-xs font-bold">
+                    <option value="dompet" class="bg-slate-900 text-white">Dompet Utama</option>
+                    <option value="tabungan" class="bg-slate-900 text-white">Dana Tabungan</option>
+                    <option value="darurat" class="bg-slate-900 text-white">Dana Darurat</option>
+                    <option value="masaDepan" class="bg-slate-900 text-white">Dana Masa Depan</option>
+                </select>
+            </div>
+
+            <!-- Saldo Tujuan -->
+            <div>
+                <label class="block text-xs text-slate-400 mb-1 font-medium">Ke Saldo (Tujuan):</label>
+                <select id="transferToSelect" class="w-full px-3.5 py-2.5 rounded-xl glass-input text-xs font-bold">
+                    <option value="tabungan" class="bg-slate-900 text-white">Dana Tabungan</option>
+                    <option value="dompet" class="bg-slate-900 text-white">Dompet Utama</option>
+                    <option value="darurat" class="bg-slate-900 text-white">Dana Darurat</option>
+                    <option value="masaDepan" class="bg-slate-900 text-white">Dana Masa Depan</option>
+                </select>
+            </div>
+
+            <!-- Input Form Nominal & Keterangan -->
+            <div class="space-y-3 border-t border-white/10 pt-3">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Nominal Transfer (Rp)</label>
+                    <input type="text" id="transferPriceInput" inputmode="numeric" placeholder="0" class="w-full px-4 py-2.5 rounded-xl glass-input text-base font-bold text-indigo-300" oninput="formatInputRibuan(this)">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Catatan / Alasan Transfer (Opsional)</label>
+                    <input type="text" id="transferReasonInput" placeholder="misal: Alokasi tabungan bulanan" class="w-full px-4 py-2.5 rounded-xl glass-input text-xs">
+                </div>
+            </div>
+
+            <div class="flex gap-2.5 pt-2">
+                <button onclick="closeTransferModal()" class="flex-1 py-3 glass-card rounded-xl text-xs font-semibold text-slate-300 hover:bg-white/10 transition">Batal</button>
+                <button onclick="processTransfer()" class="flex-1 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-xs rounded-xl transition shadow-lg shadow-indigo-500/30">Transfer Sekarang</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Pemasukan Cepat -->
+    <div id="pemasukanModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 z-50 hidden">
+        <div class="glass-card-active p-6 sm:p-7 rounded-3xl w-full max-w-md space-y-4 relative max-h-[92vh] overflow-y-auto no-scrollbar">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-bold flex items-center gap-2">
+                    <i data-lucide="arrow-down-left" class="w-5 h-5 text-emerald-400"></i>
+                    <span>Tambah Pemasukan</span>
+                </h3>
+                <button onclick="closePemasukanModal()" class="text-slate-400 hover:text-white p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Pilih Saldo Tujuan -->
+            <div>
+                <label class="block text-xs text-slate-400 mb-1.5 font-medium">Masuk ke Saldo:</label>
+                <select id="pemasukanWalletSelect" class="w-full px-3.5 py-2.5 rounded-xl glass-input text-xs font-bold">
+                    <option value="dompet" class="bg-slate-900 text-white">Dompet Utama</option>
+                    <option value="tabungan" class="bg-slate-900 text-white">Dana Tabungan</option>
+                    <option value="darurat" class="bg-slate-900 text-white">Dana Darurat</option>
+                    <option value="masaDepan" class="bg-slate-900 text-white">Dana Masa Depan</option>
+                </select>
+            </div>
+
+            <!-- Quick Template Pemasukan -->
+            <div>
+                <label class="block text-xs text-slate-400 mb-1.5 font-medium">Kategori Pemasukan Cepat:</label>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <button type="button" onclick="selectPemasukanCategory('Gaji / Honor')" class="p-2.5 glass-card hover:bg-emerald-500/20 rounded-xl text-xs font-bold text-emerald-300 border border-emerald-500/30 flex items-center gap-2 transition active:scale-95">
+                        <i data-lucide="banknote" class="w-4 h-4 text-emerald-400"></i>
+                        <span>Gaji / Honor</span>
+                    </button>
+                    <button type="button" onclick="selectPemasukanCategory('Uang Saku')" class="p-2.5 glass-card hover:bg-emerald-500/20 rounded-xl text-xs font-bold text-emerald-300 border border-emerald-500/30 flex items-center gap-2 transition active:scale-95">
+                        <i data-lucide="coins" class="w-4 h-4 text-emerald-400"></i>
+                        <span>Uang Saku</span>
+                    </button>
+                    <button type="button" onclick="selectPemasukanCategory('THR / Bonus')" class="p-2.5 glass-card hover:bg-emerald-500/20 rounded-xl text-xs font-bold text-emerald-300 border border-emerald-500/30 flex items-center gap-2 transition active:scale-95">
+                        <i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i>
+                        <span>THR / Bonus</span>
+                    </button>
+                    <button type="button" onclick="selectPemasukanCategory('Transfer / Cashback')" class="p-2.5 glass-card hover:bg-emerald-500/20 rounded-xl text-xs font-bold text-emerald-300 border border-emerald-500/30 flex items-center gap-2 transition active:scale-95">
+                        <i data-lucide="badge-percent" class="w-4 h-4 text-emerald-400"></i>
+                        <span>Cashback</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Input Form Nominal & Keterangan -->
+            <div class="space-y-3 border-t border-white/10 pt-3">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Catatan / Sumber Dana</label>
+                    <input type="text" id="pemasukanNameInput" placeholder="misal: Uang Saku Mingguan" class="w-full px-4 py-2.5 rounded-xl glass-input text-xs">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Total Nominal (Rp)</label>
+                    <input type="text" id="pemasukanPriceInput" inputmode="numeric" placeholder="0" class="w-full px-4 py-2.5 rounded-xl glass-input text-base font-bold text-emerald-400" oninput="formatInputRibuan(this)">
+                </div>
+            </div>
+
+            <div class="flex gap-2.5 pt-2">
+                <button onclick="closePemasukanModal()" class="flex-1 py-3 glass-card rounded-xl text-xs font-semibold text-slate-300 hover:bg-white/10 transition">Batal</button>
+                <button onclick="processPemasukanIncome()" class="flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-xl transition shadow-lg shadow-emerald-500/30">Simpan Saldo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Jajan / Pengeluaran Cepat -->
+    <div id="jajanModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 z-50 hidden">
+        <div class="glass-card-active p-6 sm:p-7 rounded-3xl w-full max-w-md space-y-4 relative max-h-[92vh] overflow-y-auto no-scrollbar">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-bold flex items-center gap-2">
+                    <i data-lucide="utensils" class="w-5 h-5 text-rose-400"></i>
+                    <span>Pengeluaran Cepat</span>
+                </h3>
+                <button onclick="closeJajanModal()" class="text-slate-400 hover:text-white p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Sumber Saldo Pemotongan -->
+            <div>
+                <label class="block text-xs text-slate-400 mb-1.5 font-medium">Potong dari Saldo:</label>
+                <select id="jajanWalletSelect" class="w-full px-3.5 py-2.5 rounded-xl glass-input text-xs font-bold">
+                    <option value="dompet" class="bg-slate-900 text-white">Dompet Utama</option>
+                    <option value="tabungan" class="bg-slate-900 text-white">Dana Tabungan</option>
+                    <option value="darurat" class="bg-slate-900 text-white">Dana Darurat</option>
+                    <option value="masaDepan" class="bg-slate-900 text-white">Dana Masa Depan</option>
+                </select>
+            </div>
+
+            <!-- Tombol Trigger Scanner Barcode -->
+            <button type="button" onclick="toggleBarcodeScanner()" class="w-full py-3 px-4 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 hover:from-cyan-500/30 hover:to-blue-500/30 border border-cyan-400/40 rounded-xl text-cyan-300 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95">
+                <i data-lucide="scan-line" class="w-4 h-4 text-cyan-400"></i>
+                <span id="scanBtnText">Scan Barcode / QR Harga</span>
+            </button>
+
+            <!-- Box Area Kamera Scanner -->
+            <div id="scannerContainer" class="p-3 glass-card rounded-2xl space-y-2 border border-cyan-500/40 hidden">
+                <div class="flex justify-between items-center">
+                    <span class="text-[10px] text-cyan-300 font-bold flex items-center gap-1">
+                        <i data-lucide="camera" class="w-3.5 h-3.5"></i> Arahkan Kamera ke Barcode
+                    </span>
+                    <button onclick="stopBarcodeScanner()" class="text-[10px] text-rose-400 font-bold hover:underline">Tutup</button>
+                </div>
+                <div id="scanner-reader" class="w-full overflow-hidden rounded-xl bg-slate-900"></div>
+                <p class="text-[9px] text-slate-400 text-center">Bisa scan QR/Barcode berformat nominal angka (misal: "15000" atau "Rp 15.000")</p>
+            </div>
+
+            <!-- Template / Preset Jajan -->
+            <div>
+                <div class="flex justify-between items-center mb-1.5">
+                    <label class="block text-xs text-slate-400 font-medium">Pilih Template :</label>
+                    <button onclick="toggleAddPresetInput()" class="text-[11px] text-cyan-300 font-bold hover:underline flex items-center gap-1">
+                        <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                        <span>Tambah Preset</span>
+                    </button>
+                </div>
+
+                <!-- Input Buat Preset Baru -->
+                <div id="addPresetBox" class="p-3.5 glass-card rounded-2xl mb-3 space-y-2 border border-cyan-500/30 hidden">
+                    <p class="text-[10px] text-cyan-300 font-bold">Simpan Template Baru</p>
+                    <input type="text" id="newPresetName" placeholder="Nama jajan (misal: Batagor)" class="w-full px-3 py-1.5 rounded-lg glass-input text-xs">
+                    <input type="text" id="newPresetPrice" inputmode="numeric" placeholder="Harga (Rp)" class="w-full px-3 py-1.5 rounded-lg glass-input text-xs font-bold" oninput="formatInputRibuan(this)">
+                    <div class="flex gap-2 pt-1">
+                        <button onclick="toggleAddPresetInput()" class="flex-1 py-1.5 glass-card rounded-lg text-[10px] text-slate-400">Batal</button>
+                        <button onclick="saveNewPreset()" class="flex-1 py-1.5 bg-cyan-500 text-slate-950 font-bold rounded-lg text-[10px]">Simpan Preset</button>
+                    </div>
+                </div>
+
+                <!-- List Template Jajan Grid -->
+                <div class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto no-scrollbar p-0.5" id="presetJajanContainer">
+                    <!-- Dynamic Preset Items -->
+                </div>
+            </div>
+
+            <!-- Input Form Nominal & Keterangan -->
+            <div class="space-y-3 border-t border-white/10 pt-3">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Nama / Catatan Pengeluaran</label>
+                    <input type="text" id="jajanNameInput" placeholder="misal: Parkir minimarket" class="w-full px-4 py-2.5 rounded-xl glass-input text-xs">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Total Nominal (Rp)</label>
+                    <input type="text" id="jajanPriceInput" inputmode="numeric" placeholder="0" class="w-full px-4 py-2.5 rounded-xl glass-input text-base font-bold text-rose-400" oninput="formatInputRibuan(this)">
+                </div>
+            </div>
+
+            <div class="flex gap-2.5 pt-2">
+                <button onclick="closeJajanModal()" class="flex-1 py-3 glass-card rounded-xl text-xs font-semibold text-slate-300 hover:bg-white/10 transition">Batal</button>
+                <button onclick="processJajanExpense()" class="flex-1 py-3 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-xl transition shadow-lg shadow-rose-500/30">Bayar / Potong</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit Saldo (+ / -) -->
+    <div id="saldoModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 z-50 hidden">
+        <div class="glass-card-active p-6 sm:p-7 rounded-3xl w-full max-w-md space-y-4 relative">
+            <h3 class="text-lg font-bold" id="modalSaldoTitle">Kelola Saldo</h3>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1" id="modalActionLabel">Nominal (Rp)</label>
+                    <input type="text" id="modalSaldoNominal" inputmode="numeric" placeholder="0" class="w-full px-4 py-2.5 rounded-xl glass-input text-base font-bold" oninput="formatInputRibuan(this)">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Catatan / Alasan</label>
+                    <input type="text" id="modalSaldoReason" placeholder="misal: Cilok, Uang Saku, dll" class="w-full px-4 py-2.5 rounded-xl glass-input text-xs">
+                </div>
+            </div>
+
+            <!-- Template / Quick Nominal Buttons -->
+            <div>
+                <label class="block text-[11px] text-slate-400 mb-1.5 font-medium">Pilih Nominal Cepat:</label>
+                <div class="grid grid-cols-4 gap-2" id="modalPresetButtons">
+                    <!-- Dynamic Presets (+ / -) -->
+                </div>
+            </div>
+
+            <div class="flex gap-2.5 pt-2">
+                <button onclick="closeSaldoModal()" class="flex-1 py-3 glass-card rounded-xl text-xs font-semibold text-slate-300 hover:bg-white/10 transition">Batal</button>
+                <button id="modalSubmitBtn" onclick="processSaldoChange()" class="flex-1 py-3 bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold text-xs rounded-xl transition shadow-lg">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Tambah Wishlist -->
+    <div id="wishlistModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 z-50 hidden">
+        <div class="glass-card-active p-6 sm:p-7 rounded-3xl w-full max-w-md space-y-4">
+            <h3 class="text-lg font-bold">Tambah Target Barang</h3>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Nama Barang</label>
+                    <input type="text" id="inputWishlistName" placeholder="misal: HP Baru / Sepatu" class="w-full px-4 py-2.5 rounded-xl glass-input text-xs">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Target Harga (Rp)</label>
+                    <input type="text" id="inputWishlistPrice" inputmode="numeric" placeholder="0" class="w-full px-4 py-2.5 rounded-xl glass-input text-base font-bold" oninput="formatInputRibuan(this)">
+                </div>
+            </div>
+            <div class="flex gap-2.5 pt-2">
+                <button onclick="closeWishlistModal()" class="flex-1 py-3 glass-card rounded-xl text-xs font-semibold text-slate-300 hover:bg-white/10 transition">Batal</button>
+                <button onclick="saveWishlist()" class="flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-xl transition shadow-lg shadow-emerald-500/20">Tambah</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Variable Scanner & Filter Global
+        let html5QrCode = null;
+        let isScanning = false;
+        let activeHistoryFilter = 'all'; // 'all', 'in', 'out'
+
+        // Preset Bawaan Jajan
+        const defaultJajanPresets = [
+            { id: 'p1', name: 'Air Mineral', price: 3000, icon: 'cup-soda', isDefault: true },
+            { id: 'p2', name: 'Bayar Parkir', price: 2000, icon: 'car', isDefault: true },
+            { id: 'p3', name: 'Es Teh Manis', price: 5000, icon: 'coffee', isDefault: true },
+            { id: 'p4', name: 'Ayam Geprek', price: 15000, icon: 'drumstick', isDefault: true },
+            { id: 'p5', name: 'Nasi Goreng', price: 15000, icon: 'utensils-crossed', isDefault: true },
+            { id: 'p6', name: 'Kopi Cepat', price: 10000, icon: 'coffee', isDefault: true }
+        ];
+
+        // Daftar Kalimat Acak Catchphrase
+        const catchphrases = [
+            "Jajan apa hari ini?",
+            "Abis belanja apa nih?",
+            "Ada pengeluaran apa?",
+            "Beli snack / kopi?",
+            "Catat jajananmu!",
+            "Habis bayar apa?"
+        ];
+
+        // Default App State
+        let appState = JSON.parse(localStorage.getItem('keuangan_dasar_state')) || {
+            userName: 'Teman',
+            theme: 'theme-dark',
+            wallets: {
+                dompet: 0,
+                tabungan: 0,
+                darurat: 0,
+                masaDepan: 0
+            },
+            wishlists: [],
+            customPresets: [],
+            transactions: [],
+            visibility: {
+                mainWallet: true,
+                otherWallets: true,
+                quickActions: true,
+                wishlist: true
+            },
+            headerShortcut: 'scan'
+        };
+
+        if (!appState.customPresets) appState.customPresets = [];
+        if (!appState.transactions) appState.transactions = [];
+        if (!appState.visibility) {
+            appState.visibility = { mainWallet: true, otherWallets: true, quickActions: true, wishlist: true };
+        }
+        if (!appState.headerShortcut) appState.headerShortcut = 'scan';
+
+        let currentActiveWallet = null;
+        let currentWalletAction = 'add'; 
+
+        // Wallet Metadata Info
+        const walletMeta = {
+            dompet: { title: 'Dompet Utama', icon: 'wallet', color: 'from-blue-500/20 to-cyan-500/20', textCol: 'text-cyan-400' },
+            tabungan: { title: 'Dana Tabungan', icon: 'piggy-bank', color: 'from-emerald-500/20 to-teal-500/20', textCol: 'text-emerald-400' },
+            darurat: { title: 'Dana Darurat', icon: 'shield-alert', color: 'from-rose-500/20 to-orange-500/20', textCol: 'text-rose-400' },
+            masaDepan: { title: 'Dana Masa Depan', icon: 'trending-up', color: 'from-purple-500/20 to-indigo-500/20', textCol: 'text-purple-400' }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            applyCurrentTheme();
+            updateGreeting();
+            setRandomCatchphrase();
+            initSettingsUI();
+            renderAll();
+            lucide.createIcons();
+            setupPWA();
+        });
+
+        // Tab Navigation Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            if (targetTab) targetTab.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-cyan-400');
+                btn.classList.add('text-slate-400');
+            });
+
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-400');
+                activeBtn.classList.add('text-cyan-400');
+            }
+        }
+
+        // Barcode / QR Scanner Logic
+        function toggleBarcodeScanner() {
+            if (isScanning) {
+                stopBarcodeScanner();
+            } else {
+                startBarcodeScanner();
+            }
+        }
+
+        function startBarcodeScanner() {
+            const container = document.getElementById('scannerContainer');
+            container.classList.remove('hidden');
+            
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("scanner-reader");
+            }
+
+            const config = { fps: 10, qrbox: { width: 220, height: 150 } };
+
+            html5QrCode.start(
+                { facingMode: "environment" }, 
+                config,
+                onScanSuccess,
+                onScanFailure
+            ).then(() => {
+                isScanning = true;
+                document.getElementById('scanBtnText').textContent = 'Tutup Scanner Kamera';
+            }).catch(err => {
+                alert('Gagal mengakses kamera: ' + err);
+                container.classList.add('hidden');
+            });
+        }
+
+        function stopBarcodeScanner() {
+            if (html5QrCode && isScanning) {
+                html5QrCode.stop().then(() => {
+                    isScanning = false;
+                    document.getElementById('scannerContainer').classList.add('hidden');
+                    document.getElementById('scanBtnText').textContent = 'Scan Barcode / QR Harga';
+                }).catch(err => console.error(err));
+            } else {
+                document.getElementById('scannerContainer').classList.add('hidden');
+            }
+        }
+
+        function onScanSuccess(decodedText) {
+            const extractedNumbers = decodedText.replace(/\D/g, '');
+
+            if (extractedNumbers) {
+                const amount = parseInt(extractedNumbers, 10);
+                document.getElementById('jajanPriceInput').value = amount.toLocaleString('id-ID');
+                
+                if (navigator.vibrate) navigator.vibrate(100);
+                
+                stopBarcodeScanner();
+            } else {
+                alert('Barcode/QR terdeteksi tetapi tidak mengandung nominal angka: ' + decodedText);
+            }
+        }
+
+        function onScanFailure(error) {
+            // Callback scanner aktif
+        }
+
+        // Set Catchphrase Acak
+        function setRandomCatchphrase() {
+            const randomIndex = Math.floor(Math.random() * catchphrases.length);
+            const catchphraseElem = document.getElementById('randomCatchphrase');
+            if (catchphraseElem) {
+                catchphraseElem.textContent = catchphrases[randomIndex];
+            }
+        }
+
+        // Helper Template Nominal Modal (+10k / -10k)
+        function setNominalTemplate(amount) {
+            const input = document.getElementById('modalSaldoNominal');
+            const currentVal = parseFormattedNumber(input.value) || 0;
+            const newVal = currentVal + amount;
+            input.value = newVal.toLocaleString('id-ID');
+        }
+
+        // Helper Format Titik Ribuan saat Mengetik
+        function formatInputRibuan(input) {
+            let value = input.value.replace(/\D/g, ''); 
+            if (value) {
+                input.value = parseInt(value, 10).toLocaleString('id-ID');
+            } else {
+                input.value = '';
+            }
+        }
+
+        // Helper Parse String Titik ke Angka
+        function parseFormattedNumber(str) {
+            if (!str) return 0;
+            return parseFloat(str.toString().replace(/\./g, '')) || 0;
+        }
+
+        // Theme Handlers
+        function setTheme(themeClass) {
+            appState.theme = themeClass;
+            applyCurrentTheme();
+            saveAppState();
+        }
+
+        function applyCurrentTheme() {
+            document.body.className = `flex flex-col max-w-md mx-auto min-h-screen pb-24 relative overflow-x-hidden ${appState.theme || 'theme-dark'}`;
+        }
+
+        // Settings Init & Handlers
+        function initSettingsUI() {
+            document.getElementById('toggleMainWallet').checked = appState.visibility.mainWallet;
+            document.getElementById('toggleOtherWallets').checked = appState.visibility.otherWallets;
+            document.getElementById('toggleQuickActions').checked = appState.visibility.quickActions;
+            document.getElementById('toggleWishlist').checked = appState.visibility.wishlist;
+
+            document.getElementById('headerShortcutSelect').value = appState.headerShortcut || 'scan';
+            
+            applyVisibilitySettings();
+            renderHeaderShortcut();
+        }
+
+        function updateVisibilitySettings() {
+            appState.visibility.mainWallet = document.getElementById('toggleMainWallet').checked;
+            appState.visibility.otherWallets = document.getElementById('toggleOtherWallets').checked;
+            appState.visibility.quickActions = document.getElementById('toggleQuickActions').checked;
+            appState.visibility.wishlist = document.getElementById('toggleWishlist').checked;
+
+            saveAppState();
+            applyVisibilitySettings();
+        }
+
+        function applyVisibilitySettings() {
+            const vis = appState.visibility;
+            toggleElementVisibility('section-main-wallet', vis.mainWallet);
+            toggleElementVisibility('section-other-wallets', vis.otherWallets);
+            toggleElementVisibility('section-quick-actions', vis.quickActions);
+            toggleElementVisibility('section-wishlist', vis.wishlist);
+        }
+
+        function toggleElementVisibility(id, isVisible) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (isVisible) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        }
+
+        function updateHeaderShortcutSetting(val) {
+            appState.headerShortcut = val;
+            saveAppState();
+            renderHeaderShortcut();
+        }
+
+        function renderHeaderShortcut() {
+            const container = document.getElementById('tabHeaderAction');
+            if (!container) return;
+
+            const sc = appState.headerShortcut;
+            if (sc === 'none') {
+                container.innerHTML = '';
+                return;
+            }
+
+            let btnHtml = '';
+            if (sc === 'scan') {
+                btnHtml = `
+                    <button onclick="openJajanModal(); setTimeout(startBarcodeScanner, 300)" class="p-2.5 glass-card rounded-2xl text-cyan-400 hover:bg-cyan-500/20 transition active:scale-95 border border-cyan-500/30 flex items-center gap-1.5 text-xs font-bold">
+                        <i data-lucide="scan" class="w-4 h-4"></i>
+                        <span>Scan</span>
+                    </button>
+                `;
+            } else if (sc === 'pemasukan') {
+                btnHtml = `
+                    <button onclick="openPemasukanModal()" class="p-2.5 glass-card rounded-2xl text-emerald-400 hover:bg-emerald-500/20 transition active:scale-95 border border-emerald-500/30 flex items-center gap-1.5 text-xs font-bold">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>Pemasukan</span>
+                    </button>
+                `;
+            } else if (sc === 'wishlist') {
+                btnHtml = `
+                    <button onclick="openAddWishlistModal()" class="p-2.5 glass-card rounded-2xl text-purple-400 hover:bg-purple-500/20 transition active:scale-95 border border-purple-500/30 flex items-center gap-1.5 text-xs font-bold">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        <span>Wishlist</span>
+                    </button>
+                `;
+            }
+
+            container.innerHTML = btnHtml;
+            lucide.createIcons();
+        }
+
+        // Greeting
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            let greeting = 'Selamat Pagi';
+            let icon = 'sun';
+
+            if (hour >= 11 && hour < 15) {
+                greeting = 'Selamat Siang';
+                icon = 'sun';
+            } else if (hour >= 15 && hour < 18) {
+                greeting = 'Selamat Sore';
+                icon = 'sunset';
+            } else if (hour >= 18 || hour < 4) {
+                greeting = 'Selamat Malam';
+                icon = 'moon';
+            }
+
+            document.getElementById('greetingTime').textContent = greeting;
+            document.getElementById('userNameDisplay').textContent = appState.userName;
+            document.getElementById('settingNameDisplay').textContent = appState.userName;
+            document.getElementById('timeIcon').setAttribute('data-lucide', icon);
+            lucide.createIcons();
+        }
+
+        function editUserName() {
+            const newName = prompt('Masukkan nama Anda:', appState.userName);
+            if (newName && newName.trim() !== '') {
+                appState.userName = newName.trim();
+                saveAppState();
+                document.getElementById('userNameDisplay').textContent = appState.userName;
+                document.getElementById('settingNameDisplay').textContent = appState.userName;
+            }
+        }
+
+        // Format Currency IDR
+        function formatIDR(amount) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(amount);
+        }
+
+        // Add Transaction Helper
+        function recordTransaction(type, walletKey, amount, reason) {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+            const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+            const walletName = walletMeta[walletKey] ? walletMeta[walletKey].title : walletKey;
+
+            const tx = {
+                id: 'tx_' + Date.now().toString(),
+                type: type, // 'in', 'out', or 'transfer'
+                wallet: walletName,
+                amount: amount,
+                reason: reason || (type === 'in' ? 'Pemasukan Saldo' : 'Pengeluaran Saldo'),
+                date: dateStr,
+                time: timeStr
+            };
+
+            appState.transactions.unshift(tx);
+        }
+
+        // FITUR: Ekspor & Impor Data (Backup/Restore JSON)
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+            const downloadAnchor = document.createElement('a');
+            const dateSuffix = new Date().toISOString().slice(0, 10);
+            
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `keuangan_backup_${dateSuffix}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedState = JSON.parse(e.target.result);
+                    if (importedState && importedState.wallets) {
+                        appState = importedState;
+                        saveAppState();
+                        applyCurrentTheme();
+                        initSettingsUI();
+                        renderAll();
+                        alert('Data keuangan berhasil dipulihkan!');
+                    } else {
+                        alert('Format berkas cadangan tidak valid.');
+                    }
+                } catch (err) {
+                    alert('Gagal membaca berkas JSON: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // FITUR: Transfer Antar Saldo
+        function openTransferModal() {
+            document.getElementById('transferPriceInput').value = '';
+            document.getElementById('transferReasonInput').value = '';
+            document.getElementById('transferModal').classList.remove('hidden');
+        }
+
+        function closeTransferModal() {
+            document.getElementById('transferModal').classList.add('hidden');
+        }
+
+        function processTransfer() {
+            const fromKey = document.getElementById('transferFromSelect').value;
+            const toKey = document.getElementById('transferToSelect').value;
+            const rawPrice = document.getElementById('transferPriceInput').value;
+            const amount = parseFormattedNumber(rawPrice);
+            const reason = document.getElementById('transferReasonInput').value.trim();
+
+            if (fromKey === toKey) {
+                alert('Sumber saldo dan tujuan saldo tidak boleh sama!');
+                return;
+            }
+
+            if (isNaN(amount) || amount <= 0) {
+                alert('Masukkan nominal transfer yang valid!');
+                return;
+            }
+
+            if (amount > appState.wallets[fromKey]) {
+                alert(`Saldo ${walletMeta[fromKey].title} tidak mencukupi untuk transfer ini!`);
+                return;
+            }
+
+            appState.wallets[fromKey] -= amount;
+            appState.wallets[toKey] += amount;
+
+            const notes = reason ? ` (${reason})` : '';
+            recordTransaction('transfer', fromKey, amount, `Transfer: ${walletMeta[fromKey].title} ➔ ${walletMeta[toKey].title}${notes}`);
+
+            closeTransferModal();
+            renderAll();
+        }
+
+        // FITUR: Filter Riwayat Transaksi
+        function setHistoryFilter(filterType) {
+            activeHistoryFilter = filterType;
+
+            const btnAll = document.getElementById('filter-btn-all');
+            const btnIn = document.getElementById('filter-btn-in');
+            const btnOut = document.getElementById('filter-btn-out');
+
+            [btnAll, btnIn, btnOut].forEach(btn => {
+                btn.className = "flex-1 py-1.5 px-3 glass-card rounded-xl text-xs font-bold text-slate-400 border border-white/5 transition";
+            });
+
+            if (filterType === 'all') {
+                btnAll.className = "flex-1 py-1.5 px-3 glass-card rounded-xl text-xs font-bold text-cyan-400 border border-cyan-400/50 transition";
+            } else if (filterType === 'in') {
+                btnIn.className = "flex-1 py-1.5 px-3 glass-card rounded-xl text-xs font-bold text-emerald-400 border border-emerald-400/50 transition";
+            } else if (filterType === 'out') {
+                btnOut.className = "flex-1 py-1.5 px-3 glass-card rounded-xl text-xs font-bold text-rose-400 border border-rose-400/50 transition";
+            }
+
+            renderHistory();
+        }
+
+        // Clear History
+        function clearHistory() {
+            if (confirm('Yakin ingin menghapus seluruh riwayat transaksi?')) {
+                appState.transactions = [];
+                renderHistory();
+                saveAppState();
+            }
+        }
+
+        // Render All UI Components
+        function renderAll() {
+            renderWallets();
+            renderWishlists();
+            renderJajanPresets();
+            renderHistory();
+            applyVisibilitySettings();
+            renderHeaderShortcut();
+            saveAppState();
+        }
+
+        function saveAppState() {
+            localStorage.setItem('keuangan_dasar_state', JSON.stringify(appState));
+        }
+
+        // Render Saldo Cards
+        function renderWallets() {
+            const grid = document.getElementById('saldoGrid');
+            const berandaOtherContainer = document.getElementById('berandaOtherWallets');
+            let total = 0;
+            grid.innerHTML = '';
+            if (berandaOtherContainer) berandaOtherContainer.innerHTML = '';
+
+            // Update Dompet Utama di Beranda
+            const dompetSaldo = appState.wallets.dompet || 0;
+            document.getElementById('berandaDompetSaldo').textContent = formatIDR(dompetSaldo);
+
+            Object.keys(appState.wallets).forEach(key => {
+                const val = appState.wallets[key];
+                total += val;
+                const meta = walletMeta[key];
+
+                // Render Kartu di TAB 2 (Semua Saldo)
+                const cardHtml = `
+                    <div class="glass-card p-5 rounded-3xl flex flex-col justify-between bg-gradient-to-br ${meta.color} border border-white/10 relative group space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <div class="p-2.5 glass-card rounded-2xl ${meta.textCol}">
+                                    <i data-lucide="${meta.icon}" class="w-5 h-5"></i>
+                                </div>
+                                <span class="text-sm font-bold text-slate-200">${meta.title}</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-0.5">Sisa Saldo</span>
+                            <div class="text-2xl font-black tracking-tight ${meta.textCol}">${formatIDR(val)}</div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="grid grid-cols-2 gap-2 pt-1 border-t border-white/10">
+                            <button onclick="openSaldoModal('${key}', 'add')" class="py-2 px-3 glass-card hover:bg-emerald-500/20 rounded-xl text-emerald-400 flex items-center justify-center gap-1.5 transition active:scale-95 text-xs font-bold">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                <span>Tambah</span>
+                            </button>
+                            <button onclick="openSaldoModal('${key}', 'subtract')" class="py-2 px-3 glass-card hover:bg-rose-500/20 rounded-xl text-rose-400 flex items-center justify-center gap-1.5 transition active:scale-95 text-xs font-bold">
+                                <i data-lucide="minus" class="w-4 h-4"></i>
+                                <span>Kurang</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += cardHtml;
+
+                // Render Saldo Lainnya di TAB 1 (Beranda) Kotak-kotak Kecil
+                if (key !== 'dompet' && berandaOtherContainer) {
+                    const smallCardHtml = `
+                        <div onclick="switchTab('saldo')" class="glass-card p-2.5 rounded-2xl border border-white/10 flex flex-col justify-between cursor-pointer hover:border-cyan-400/50 transition">
+                            <div class="flex items-center gap-1 text-[10px] text-slate-400 font-medium truncate mb-1">
+                                <i data-lucide="${meta.icon}" class="w-3 h-3 ${meta.textCol} shrink-0"></i>
+                                <span class="truncate">${meta.title.replace('Dana ', '')}</span>
+                            </div>
+                            <div class="text-xs font-extrabold ${meta.textCol} truncate">${formatIDR(val)}</div>
+                        </div>
+                    `;
+                    berandaOtherContainer.innerHTML += smallCardHtml;
+                }
+            });
+
+            document.getElementById('totalSemuaSaldo').textContent = formatIDR(total);
+            lucide.createIcons();
+        }
+
+        // Render Wishlist Items
+        function renderWishlists() {
+            const container = document.getElementById('wishlistContainer');
+            const currentTabungan = appState.wallets.tabungan;
+
+            if (appState.wishlists.length === 0) {
+                container.innerHTML = `
+                    <div class="glass-card p-6 rounded-2xl text-center">
+                        <p class="text-xs text-slate-400">Belum ada barang impian di wishlist.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = appState.wishlists.map(item => {
+                const isReached = currentTabungan >= item.price;
+                const progressPct = Math.min(100, Math.round((currentTabungan / item.price) * 100));
+
+                return `
+                    <div class="glass-card p-4 rounded-2xl transition-all duration-300 ${isReached ? 'shimmer-card' : ''}">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h3 class="text-sm font-bold">${item.name}</h3>
+                                    ${isReached ? '<span class="px-2 py-0.5 text-[9px] font-extrabold bg-emerald-500 text-slate-950 rounded-full shadow-lg shadow-emerald-500/40">TERCAPAI</span>' : ''}
+                                </div>
+                                <p class="text-xs font-semibold text-slate-300 mt-0.5">Target: ${formatIDR(item.price)}</p>
+                            </div>
+                            <button onclick="deleteWishlist('${item.id}')" class="text-slate-500 hover:text-rose-400 transition p-1">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="space-y-1">
+                            <div class="w-full bg-slate-950/50 rounded-full h-2 overflow-hidden p-0.5 border border-white/5">
+                                <div class="h-full rounded-full transition-all duration-500 ${isReached ? 'bg-gradient-to-r from-emerald-400 to-teal-300' : 'bg-gradient-to-r from-cyan-500 to-blue-500'}" style="width: ${progressPct}%"></div>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px] text-slate-400">
+                                <span>Progres Tabungan</span>
+                                <span class="font-bold ${isReached ? 'text-emerald-400' : 'text-cyan-400'}">${progressPct}%</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        // Render Jajan Preset Grid
+        function renderJajanPresets() {
+            const container = document.getElementById('presetJajanContainer');
+            if (!container) return;
+
+            const allPresets = [...defaultJajanPresets, ...appState.customPresets];
+
+            container.innerHTML = allPresets.map(p => `
+                <div class="relative group">
+                    <button type="button" onclick="selectPreset('${p.name.replace(/'/g, "\\'")}', ${p.price})" class="w-full p-2.5 glass-card hover:bg-rose-500/20 rounded-xl text-left border border-white/10 hover:border-rose-400/50 transition flex flex-col justify-between h-full active:scale-95">
+                        <div class="flex items-center gap-1.5 text-slate-300 mb-1">
+                            <i data-lucide="${p.icon || 'tag'}" class="w-3.5 h-3.5 text-rose-400"></i>
+                            <span class="text-xs font-bold truncate">${p.name}</span>
+                        </div>
+                        <span class="text-[11px] font-extrabold text-rose-300">${formatIDR(p.price)}</span>
+                    </button>
+                    ${!p.isDefault ? `
+                        <button onclick="deleteCustomPreset('${p.id}')" class="absolute -top-1 -right-1 p-1 bg-rose-500/80 hover:bg-rose-600 rounded-full text-white shadow transition" title="Hapus Preset">
+                            <i data-lucide="x" class="w-2.5 h-2.5"></i>
+                        </button>
+                    ` : ''}
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        // Render Transaction History (dengan Filter & Rekapitulasi Ringkas)
+        function renderHistory() {
+            const container = document.getElementById('historyContainer');
+            if (!container) return;
+
+            let sumIn = 0;
+            let sumOut = 0;
+
+            appState.transactions.forEach(tx => {
+                if (tx.type === 'in') sumIn += tx.amount;
+                if (tx.type === 'out') sumOut += tx.amount;
+            });
+
+            document.getElementById('historyTotalIn').textContent = formatIDR(sumIn);
+            document.getElementById('historyTotalOut').textContent = formatIDR(sumOut);
+
+            let filteredTx = appState.transactions;
+            if (activeHistoryFilter === 'in') {
+                filteredTx = appState.transactions.filter(t => t.type === 'in');
+            } else if (activeHistoryFilter === 'out') {
+                filteredTx = appState.transactions.filter(t => t.type === 'out');
+            }
+
+            if (filteredTx.length === 0) {
+                container.innerHTML = `
+                    <div class="glass-card p-5 rounded-2xl text-center">
+                        <p class="text-xs text-slate-400">Tidak ada riwayat transaksi.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredTx.map(tx => {
+                const isIn = tx.type === 'in';
+                const isTransfer = tx.type === 'transfer';
+                
+                let colorClass = isIn ? 'text-emerald-400' : 'text-rose-400';
+                let bgIconClass = isIn ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400';
+                let sign = isIn ? '+' : '-';
+                let icon = isIn ? 'arrow-down-left' : 'arrow-up-right';
+
+                if (isTransfer) {
+                    colorClass = 'text-indigo-300';
+                    bgIconClass = 'bg-indigo-500/20 text-indigo-400';
+                    sign = '•';
+                    icon = 'arrow-left-right';
+                }
+
+                return `
+                    <div class="glass-card p-3 rounded-2xl flex items-center justify-between gap-3 hover:bg-white/5 transition">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="p-2 rounded-xl glass-card ${bgIconClass} shrink-0">
+                                <i data-lucide="${icon}" class="w-4 h-4"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h4 class="text-xs font-bold truncate text-slate-200">${tx.reason}</h4>
+                                <div class="flex items-center gap-2 text-[10px] text-slate-400 mt-0.5">
+                                    <span>${tx.wallet}</span>
+                                    <span>•</span>
+                                    <span>${tx.date}, ${tx.time}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <span class="text-xs font-extrabold ${colorClass}">${sign} ${formatIDR(tx.amount)}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        // Select Preset ke Form Input
+        function selectPreset(name, price) {
+            document.getElementById('jajanNameInput').value = name;
+            document.getElementById('jajanPriceInput').value = price.toLocaleString('id-ID');
+        }
+
+        // Pemasukan Modal Handlers
+        function openPemasukanModal() {
+            document.getElementById('pemasukanNameInput').value = '';
+            document.getElementById('pemasukanPriceInput').value = '';
+            document.getElementById('pemasukanModal').classList.remove('hidden');
+        }
+
+        function closePemasukanModal() {
+            document.getElementById('pemasukanModal').classList.add('hidden');
+        }
+
+        function selectPemasukanCategory(catName) {
+            document.getElementById('pemasukanNameInput').value = catName;
+        }
+
+        function processPemasukanIncome() {
+            const targetWalletKey = document.getElementById('pemasukanWalletSelect').value;
+            const name = document.getElementById('pemasukanNameInput').value.trim() || 'Pemasukan Saldo';
+            const rawPrice = document.getElementById('pemasukanPriceInput').value;
+            const price = parseFormattedNumber(rawPrice);
+
+            if (isNaN(price) || price <= 0) {
+                alert('Masukkan nominal pemasukan yang valid!');
+                return;
+            }
+
+            appState.wallets[targetWalletKey] += price;
+            recordTransaction('in', targetWalletKey, price, name);
+
+            closePemasukanModal();
+            renderAll();
+        }
+
+        // Jajan Modal Handlers
+        function openJajanModal() {
+            setRandomCatchphrase();
+            document.getElementById('jajanNameInput').value = '';
+            document.getElementById('jajanPriceInput').value = '';
+            document.getElementById('addPresetBox').classList.add('hidden');
+            renderJajanPresets();
+            document.getElementById('jajanModal').classList.remove('hidden');
+        }
+
+        function closeJajanModal() {
+            stopBarcodeScanner();
+            document.getElementById('jajanModal').classList.add('hidden');
+        }
+
+        function toggleAddPresetInput() {
+            document.getElementById('addPresetBox').classList.toggle('hidden');
+        }
+
+        function saveNewPreset() {
+            const name = document.getElementById('newPresetName').value.trim();
+            const rawPrice = document.getElementById('newPresetPrice').value;
+            const price = parseFormattedNumber(rawPrice);
+
+            if (!name || isNaN(price) || price <= 0) {
+                alert('Masukkan nama dan harga preset yang valid!');
+                return;
+            }
+
+            const newPreset = {
+                id: 'custom_' + Date.now().toString(),
+                name: name,
+                price: price,
+                icon: 'shopping-bag',
+                isDefault: false
+            };
+
+            appState.customPresets.push(newPreset);
+            saveAppState();
+
+            document.getElementById('newPresetName').value = '';
+            document.getElementById('newPresetPrice').value = '';
+            toggleAddPresetInput();
+            renderJajanPresets();
+        }
+
+        function deleteCustomPreset(id) {
+            if (confirm('Hapus template jajan ini?')) {
+                appState.customPresets = appState.customPresets.filter(p => p.id !== id);
+                saveAppState();
+                renderJajanPresets();
+            }
+        }
+
+        function processJajanExpense() {
+            const targetWalletKey = document.getElementById('jajanWalletSelect').value;
+            const name = document.getElementById('jajanNameInput').value.trim() || 'Pengeluaran Cepat';
+            const rawPrice = document.getElementById('jajanPriceInput').value;
+            const price = parseFormattedNumber(rawPrice);
+
+            if (isNaN(price) || price <= 0) {
+                alert('Masukkan nominal pengeluaran yang valid!');
+                return;
+            }
+
+            if (price > appState.wallets[targetWalletKey]) {
+                alert(`Saldo ${walletMeta[targetWalletKey].title} tidak mencukupi untuk pengeluaran ini!`);
+                return;
+            }
+
+            appState.wallets[targetWalletKey] -= price;
+            recordTransaction('out', targetWalletKey, price, name);
+
+            closeJajanModal();
+            renderAll();
+        }
+
+        // Modal Handlers Saldo (+ / -)
+        function openSaldoModal(walletKey, action) {
+            currentActiveWallet = walletKey;
+            currentWalletAction = action;
+            const meta = walletMeta[walletKey];
+            
+            const isAdd = action === 'add';
+            const titleText = `${isAdd ? 'Tambah' : 'Kurangi'} ${meta.title}`;
+            const labelText = `Nominal ${isAdd ? 'Penambahan' : 'Pengurangan'} (Rp)`;
+
+            document.getElementById('modalSaldoTitle').textContent = titleText;
+            document.getElementById('modalActionLabel').textContent = labelText;
+            document.getElementById('modalSaldoNominal').value = '';
+            document.getElementById('modalSaldoReason').value = '';
+
+            const submitBtn = document.getElementById('modalSubmitBtn');
+            const presetContainer = document.getElementById('modalPresetButtons');
+
+            if (isAdd) {
+                submitBtn.className = "flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-xl transition shadow-lg shadow-emerald-500/20";
+                
+                presetContainer.innerHTML = `
+                    <button type="button" onclick="setNominalTemplate(10000)" class="py-2.5 glass-card hover:bg-emerald-500/20 rounded-xl text-xs font-bold text-emerald-400 border border-emerald-500/30 transition active:scale-95">+10k</button>
+                    <button type="button" onclick="setNominalTemplate(20000)" class="py-2.5 glass-card hover:bg-emerald-500/20 rounded-xl text-xs font-bold text-emerald-400 border border-emerald-500/30 transition active:scale-95">+20k</button>
+                    <button type="button" onclick="setNominalTemplate(50000)" class="py-2.5 glass-card hover:bg-emerald-500/20 rounded-xl text-xs font-bold text-emerald-400 border border-emerald-500/30 transition active:scale-95">+50k</button>
+                    <button type="button" onclick="setNominalTemplate(100000)" class="py-2.5 glass-card hover:bg-emerald-500/20 rounded-xl text-xs font-bold text-emerald-400 border border-emerald-500/30 transition active:scale-95">+100k</button>
+                `;
+            } else {
+                submitBtn.className = "flex-1 py-3 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-xl transition shadow-lg shadow-rose-500/20";
+
+                presetContainer.innerHTML = `
+                    <button type="button" onclick="setNominalTemplate(10000)" class="py-2.5 glass-card hover:bg-rose-500/20 rounded-xl text-xs font-bold text-rose-400 border border-rose-500/30 transition active:scale-95">-10k</button>
+                    <button type="button" onclick="setNominalTemplate(20000)" class="py-2.5 glass-card hover:bg-rose-500/20 rounded-xl text-xs font-bold text-rose-400 border border-rose-500/30 transition active:scale-95">-20k</button>
+                    <button type="button" onclick="setNominalTemplate(50000)" class="py-2.5 glass-card hover:bg-rose-500/20 rounded-xl text-xs font-bold text-rose-400 border border-rose-500/30 transition active:scale-95">-50k</button>
+                    <button type="button" onclick="setNominalTemplate(100000)" class="py-2.5 glass-card hover:bg-rose-500/20 rounded-xl text-xs font-bold text-rose-400 border border-rose-500/30 transition active:scale-95">-100k</button>
+                `;
+            }
+
+            document.getElementById('saldoModal').classList.remove('hidden');
+        }
+
+        function closeSaldoModal() {
+            document.getElementById('saldoModal').classList.add('hidden');
+        }
+
+        function processSaldoChange() {
+            const rawValue = document.getElementById('modalSaldoNominal').value;
+            const nominal = parseFormattedNumber(rawValue);
+            const reason = document.getElementById('modalSaldoReason').value.trim();
+
+            if (isNaN(nominal) || nominal <= 0) {
+                alert('Masukkan nominal yang valid!');
+                return;
+            }
+
+            if (currentWalletAction === 'add') {
+                appState.wallets[currentActiveWallet] += nominal;
+                recordTransaction('in', currentActiveWallet, nominal, reason || 'Tambah Saldo');
+            } else {
+                if (nominal > appState.wallets[currentActiveWallet]) {
+                    alert('Saldo tidak mencukupi untuk dikurangi!');
+                    return;
+                }
+                appState.wallets[currentActiveWallet] -= nominal;
+                recordTransaction('out', currentActiveWallet, nominal, reason || 'Kurangi Saldo');
+            }
+
+            closeSaldoModal();
+            renderAll();
+        }
+
+        // Wishlist Modal Handlers
+        function openAddWishlistModal() {
+            document.getElementById('inputWishlistName').value = '';
+            document.getElementById('inputWishlistPrice').value = '';
+            document.getElementById('wishlistModal').classList.remove('hidden');
+        }
+
+        function closeWishlistModal() {
+            document.getElementById('wishlistModal').classList.add('hidden');
+        }
+
+        function saveWishlist() {
+            const name = document.getElementById('inputWishlistName').value.trim();
+            const rawPrice = document.getElementById('inputWishlistPrice').value;
+            const price = parseFormattedNumber(rawPrice);
+
+            if (!name || isNaN(price) || price <= 0) {
+                alert('Mohon isi nama barang dan target harga dengan benar!');
+                return;
+            }
+
+            appState.wishlists.push({
+                id: Date.now().toString(),
+                name: name,
+                price: price
+            });
+
+            closeWishlistModal();
+            renderAll();
+        }
+
+        function deleteWishlist(id) {
+            if (confirm('Hapus barang ini dari wishlist?')) {
+                appState.wishlists = appState.wishlists.filter(w => w.id !== id);
+                renderAll();
+            }
+        }
+
+        // PWA Setup dengan Pre-caching Pustaka CDN
+        function setupPWA() {
+            if ('serviceWorker' in navigator) {
+                const cdnAssets = [
+                    'https://cdn.tailwindcss.com',
+                    'https://unpkg.com/lucide@latest',
+                    'https://unpkg.com/html5-qrcode'
+                ];
+
+                const swCode = `
+                    const CACHE_NAME = 'myduitgue-cache-v2';
+                    const ASSETS = ${JSON.stringify(cdnAssets)};
+
+                    self.addEventListener('install', (e) => {
+                        e.waitUntil(
+                            caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting())
+                        );
+                    });
+
+                    self.addEventListener('activate', (e) => {
+                        e.waitUntil(
+                            caches.keys().then((keys) => {
+                                return Promise.all(
+                                    keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+                                );
+                            }).then(() => self.clients.claim())
+                        );
+                    });
+
+                    self.addEventListener('fetch', (e) => {
+                        e.respondWith(
+                            caches.match(e.request).then((cachedResponse) => {
+                                if (cachedResponse) return cachedResponse;
+                                return fetch(e.request).then((networkResponse) => {
+                                    if (networkResponse && networkResponse.status === 200) {
+                                        const responseToCache = networkResponse.clone();
+                                        caches.open(CACHE_NAME).then((cache) => cache.put(e.request, responseToCache));
+                                    }
+                                    return networkResponse;
+                                }).catch(() => cachedResponse);
+                            })
+                        );
+                    });
+                `;
+
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                navigator.serviceWorker.register(URL.createObjectURL(blob)).catch((err) => {
+                    console.log('SW registration error:', err);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
